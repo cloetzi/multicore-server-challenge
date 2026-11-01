@@ -1,8 +1,10 @@
 # Rage vs Rails comparison harness
 
-Not a submission. These scripts benchmark `submissions/ruby-rails-bottrall` (Rails 8.1 + Falcon) against
-`submissions/ruby-rage-cloetzi` (the same app on Rage + Iodine) under identical conditions on one Linux host
-with Docker. The results are summarized in `submissions/ruby-rage-cloetzi/README.md` ("Local comparison").
+Not a submission. These scripts benchmark `submissions/ruby-rails-bottrall` (Rails 8.1 + Falcon),
+`submissions/ruby-rage-cloetzi` (the same app on Rage + Iodine, still on Active Record) and
+`submissions/ruby-rage-sequel-cloetzi` (the Rage version on Sequel instead of Active Record) under identical
+conditions on one Linux host with Docker. The results are summarized in the submissions' READMEs ("Local results").
+`SUBMISSIONS` picks which of them a script builds and runs (default: all three).
 
 ```bash
 sudo bash compare/rage-vs-rails/setup.sh     # once: image, Postgres 18, seed, build + conformance for both (~6 min on a fast box)
@@ -32,6 +34,21 @@ sudo docker exec msc-app bash -c 'rsync -a --exclude vendor --exclude .bundle --
 
 rsync doesn't delete, so remove files you deleted from `/work` by hand.
 
+### Active Record vs Sequel on Rage
+
+The two Rage versions, under a fresh `VARIANT` label so that neither reuses the earlier runs in the results file.
+`START` near the Active Record version's earlier limit saves a few doubling probes:
+
+```bash
+SUBMISSIONS="ruby-rage-cloetzi ruby-rage-sequel-cloetzi" sudo -E bash compare/rage-vs-rails/setup.sh   # or, if the containers exist, the rsync + test/run.sh line above
+SUBMISSIONS="ruby-rage-cloetzi ruby-rage-sequel-cloetzi" VARIANT=ar-vs-sequel START=32000 sudo -E python3 compare/rage-vs-rails/search.py
+python3 compare/rage-vs-rails/table.py compare/rage-vs-rails/results-linux.jsonl
+```
+
+The per-request CPU in `run.sh`'s output (`app_us_per_req`, `pg_us_per_req`) is the number to compare first. On a
+laptop, Sequel cut app CPU per request by 19% but Postgres's went up by 40% on the same statements (see
+`submissions/ruby-rage-sequel-cloetzi/README.md`); a pinned 8-core host should show whether that holds.
+
 ## Scripts
 
 | script | what |
@@ -43,6 +60,7 @@ rsync doesn't delete, so remove files you deleted from `/work` by hand.
 | `sweep.sh` | a fixed list of loads for both servers, alternating |
 | `table.py <results>` | the results as a markdown table |
 | `stats.py <dump> <results>` | GC and YJIT per worker over each run's window, from the `RAGE_STATS=1` dump (below) |
+| `ormbench.rb` | per-endpoint Ruby and Postgres CPU of the two Rage versions' model code, in-process, plus a raw-pg floor (usage at the top of the file) |
 | `json_bench.rb` | Active Support's `to_json` against `JSON.generate` on payloads shaped like the API's |
 
 Settings (environment, see `config.sh` and the top of each script): `APP_CPUS`, `PG_CPUS`, `LG_CPUS`, `WORKERS`,

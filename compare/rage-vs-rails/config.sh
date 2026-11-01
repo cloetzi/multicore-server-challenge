@@ -10,7 +10,7 @@
 : "${PGPORT:=5433}"           # Postgres listens here on the host network (5433 to stay clear of a local Postgres)
 : "${THINK_SCALE:=1}"         # 1 = the real workload; <1 = more requests per user (testing only, fewer sockets)
 : "${RAMP:=60}" ; : "${MEASURE:=60}" ; : "${TAIL:=15}"   # seconds; same as the scorer's 2-minute probes
-: "${SUBMISSIONS:=ruby-rails-bottrall ruby-rage-cloetzi}"
+: "${SUBMISSIONS:=ruby-rails-bottrall ruby-rage-cloetzi ruby-rage-sequel-cloetzi}"
 : "${IMAGE:=msc-compare}"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export PGHOST=127.0.0.1 PGPORT PGUSER=postgres PGPASSWORD=postgres

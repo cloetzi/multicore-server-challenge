@@ -23,7 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.environ.get("OUT", os.path.join(HERE, "results-linux.jsonl"))
 START = int(os.environ.get("START", "4000"))
 STEP = int(os.environ.get("STEP", "0"))  # 0 = double (the scorer); else climb from START by STEP until a fail
-SUBS = os.environ.get("SUBMISSIONS", "ruby-rails-bottrall ruby-rage-cloetzi").split()
+SUBS = os.environ.get("SUBMISSIONS", "ruby-rails-bottrall ruby-rage-cloetzi ruby-rage-sequel-cloetzi").split()
 RES = 0.05
 PROBE_RAMP = int(os.environ.get("PROBE_RAMP", "60"))
 PROBE_MEASURE = int(os.environ.get("PROBE_MEASURE", "60"))
